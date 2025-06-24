@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="container py-5">
+  <h1 class="mb-4">I miei ordini</h1>
+  <div class="row">
+    <div class="col-md-4 mb-4">
+      <div class="card">
+        <div class="card-header">
+          <h5 class="mb-0">Menu profilo</h5>
+        </div>
+        <div class="list-group list-group-flush">
+          <a href="{% url 'account:profile' %}" class="list-group-item list-group-item-action">Dati personali</a>
+          <a href="{% url 'account:profile_update' %}" class="list-group-item list-group-item-action">Modifica profilo</a>
+          <a href="{% url 'account:orders' %}" class="list-group-item list-group-item-action active">I miei ordini</a>
+          <a href="{% url 'account:change_password' %}" class="list-group-item list-group-item-action">Cambia password</a>
+          <a href="{% url 'account:logout' %}" class="list-group-item list-group-item-action text-danger">Esci</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-8">
+      <div class="card">
+        <div class="card-header">
+          <h5 class="mb-0">Storico ordini</h5>
+        </div>
+        <div class="card-body">
+          {% if orders %}
+            <div class="table-responsive">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th>Numero ordine</th>
+                    <th>Data</th>
+                    <th>Totale</th>
+                    <th>Stato</th>
+                    <th>Azioni</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for order in orders %}
+                  <tr>
+                    <td>{{ order.id }}</td>
+                    <td>{{ order.created_at|date:"d/m/Y" }}</td>
+                    <td>€{{ order.total_amount }}</td>
+                    <td>{{ order.get_status_display }}</td>
+                    <td><a href="#" class="btn btn-sm btn-outline-primary">Dettagli</a></td>
+                  </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          {% else %}
+            <p>Non hai ancora effettuato ordini.</p>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-4 mb-5" style="min-height: 45vh;">
+  <div class="row justify-content-center">
+    <div class="col-md-5 col-lg-4">
+      <form class="form-signin mt-5 p-4 border rounded-3 bg-light" method="post">
+        {% csrf_token %}
+        
+        <h1 class="h3 mb-4 text-center" style="color: #6b4f27;">Accedi</h1>
+
+        {% if form.non_field_errors %}
+          <div class="alert alert-danger">
+            {% for error in form.non_field_errors %}
+              {{ error }}
+            {% endfor %}
+          </div>
+        {% endif %}
+
+        <div class="form-floating mb-3">
+          {{ form.username }}
+          <label for="{{ form.username.id_for_label }}">Email o username</label>
+        </div>
+
+        <div class="form-floating mb-3">
+          {{ form.password }}
+          <label for="{{ form.password.id_for_label }}">Password</label>
+        </div>
+
+        <div class="checkbox mb-3">
+          <label>
+            <input type="checkbox" value="remember-me"> Ricordami
+          </label>
+        </div>
+
+        <button class="w-100 btn btn-lg mb-3" 
+                style="background-color: #6b4f27; color: #f5e6cc;" 
+                type="submit">Accedi</button>
+
+        <div class="text-center">
+          <a href="{% url 'account:change_password' %}" class="text-decoration-none" style="color: #6b4f27;">
+            Password dimenticata?
+          </a>
+          <hr class="my-4">
+          <p class="text-muted">Non hai un account? <br>
+            <a href="{% url 'account:signup' %}" style="color: #6b4f27;">Registrati ora</a>
+          </p>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<style>
+  .form-signin {
+    max-width: 400px;
+  }
+  
+  .form-floating input {
+    border-radius: 4px !important;
+    margin-bottom: 10px;
+  }
+  
+  .form-floating label {
+    color: #6b4f27;
+  }
+  
+  .btn:hover {
+    background-color: #5a4120 !important;
+    color: #f5e6cc !important;
+  }
+</style>
+{% endblock %}

@@ -1,0 +1,87 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Prodotti - Dulcis Fabula{% endblock %}
+
+{% block content %}
+
+<header class="hero-section">
+  <div class="container h-200">
+    <a href="#products" class="custom-hero-btn">
+      Scopri i nostri prodotti
+    </a>
+  </div>
+</header>
+
+<section id="products" class="py-5 bg-light">
+  <div class="container">
+    <div class="categories mb-5 text-center">
+      <h2 class="mb-4">Scegli la tua categoria preferita</h2>
+      <div class="d-flex flex-wrap justify-content-center gap-3">
+        <a href="{% url 'shop:product_list' %}" class="btn btn-outline-primary {% if not category_name %}active{% endif %}">Tutti</a>
+        {% for category in categories %}
+          <a href="{% url 'shop:product_by_category' category.slug %}" 
+             class="btn btn-outline-primary {% if category.name == category_name %}active{% endif %}">
+             {{ category.name }}
+          </a>
+        {% endfor %}
+      </div>
+    </div>
+
+    <div class="products-section">
+      <h2 class="text-center mb-5">
+        {% if category_name %}{{ category_name }}{% else %}Tutti i nostri prodotti{% endif %}
+      </h2>
+      
+      {% if products %}
+      <div class="row g-4">
+        {% for product in products %}
+        <div class="col-lg-3 col-md-4 col-sm-6">
+          <div class="product-card h-100">
+            <div class="product-badge">
+              {% if product.is_new %}Novità{% endif %}
+              {% if product.discount_price %}
+                <span class="discount">-{{ product.get_discount_percentage }}%</span>
+              {% endif %}
+            </div>
+            <a href="{% url 'shop:product_detail' product.id product.slug %}">
+              <div class="product-img-container">
+                {% if product.image %}
+                <img src="{{ product.image.url }}" alt="{{ product.name }}" class="product-img">
+                {% else %}
+                <img src="{% static 'img/placeholder-product.jpg' %}" alt="{{ product.name }}" class="product-img">
+                {% endif %}
+              </div>
+            </a>
+            <div class="product-info p-3">
+              <h3 class="product-title">{{ product.name }}</h3>
+              <p class="product-description">{{ product.short_description }}</p>
+              
+              <div class="d-flex justify-content-between align-items-center mt-3">
+                <div class="price-container">
+                  {% if product.discount_price %}
+                    <span class="original-price">€{{ product.price|floatformat:2 }}</span>
+                    <span class="discount-price">€{{ product.discount_price|floatformat:2 }}</span>
+                  {% else %}
+                    <span class="current-price">€{{ product.price|floatformat:2 }}</span>
+                  {% endif %}
+                </div>
+                <a href="{% url 'shop:add_to_cart' product.id %}" class="btn btn-primary btn-sm">
+                  <i class="fas fa-plus"></i> Aggiungi
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+      {% else %}
+      <div class="text-center py-5">
+        <h3 class="mb-3">Nessun prodotto trovato</h3>
+        <p>Spiacenti, non ci sono prodotti disponibili in questa categoria.</p>
+        <a href="{% url 'shop:product_list' %}" class="btn btn-primary">Vedi tutti i prodotti</a>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+</section>
+{% endblock %}

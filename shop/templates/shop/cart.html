@@ -1,0 +1,142 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Carrello - Dulcis Fabula{% endblock %}
+
+{% block content %}
+<section class="py-5">
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-8">
+        <div class="card shadow-sm">
+          <div class="card-header bg-white">
+            <h2 class="mb-0">Il tuo carrello</h2>
+          </div>
+          
+          <div class="card-body">
+            {% if items %}
+              <div class="cart-items">
+                {% for item in items %}
+                  <div class="cart-item py-3 border-bottom">
+                    <div class="row align-items-center">
+                      <div class="col-md-2">
+                        {% if item.product.image %}
+                          <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}" class="img-fluid rounded">
+                        {% else %}
+                          <img src="{% static 'img/placeholder-product.jpg' %}" alt="{{ item.product.name }}" class="img-fluid rounded">
+                        {% endif %}
+                      </div>
+                      <div class="col-md-5">
+                        <h5 class="mb-1">{{ item.product.name }}</h5>
+                        <p class="text-muted mb-1">{{ item.product.short_description }}</p>
+                      </div>
+                      <div class="col-md-3">
+                        <div class="input-group">
+                          <button class="btn btn-outline-secondary quantity-btn" data-item-id="{{ item.id }}" data-action="decrease">-</button>
+                          <input type="text" class="form-control text-center quantity-input" value="{{ item.quantity }}" readonly>
+                          <button class="btn btn-outline-secondary quantity-btn" data-item-id="{{ item.id }}" data-action="increase">+</button>
+                        </div>
+                      </div>
+                      <div class="col-md-2 text-end">
+                        <p class="mb-1 fw-bold">€{{ item.get_total_price|floatformat:2 }}</p>
+                        <a href="{% url 'shop:remove_from_cart' item.id %}" class="text-danger small">
+                          <i class="fas fa-trash-alt"></i> Rimuovi
+                        </a>
+                      </div>
+                    </div>
+                  </div>
+                {% endfor %}
+              </div>
+            {% else %}
+              <div class="text-center py-5">
+                <i class="fas fa-shopping-cart fa-4x text-muted mb-4"></i>
+                <h3>Il tuo carrello è vuoto</h3>
+                <p class="text-muted">Aggiungi alcuni prodotti prima di procedere al checkout</p>
+                <a href="{% url 'shop:product_list' %}" class="btn btn-primary">Continua lo shopping</a>
+              </div>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+      
+      {% if items %}
+      <div class="col-lg-4">
+        <div class="card shadow-sm">
+          <div class="card-header bg-white">
+            <h3 class="mb-0">Riepilogo ordine</h3>
+          </div>
+          <div class="card-body">
+            <div class="d-flex justify-content-between mb-2">
+              <span>Subtotale:</span>
+              <span>€{{ subtotal|floatformat:2 }}</span>
+            </div>
+            
+            <div class="d-flex justify-content-between mb-2">
+              <span>Spedizione:</span>
+              <span>
+                {% if user_is_authenticated %}
+                  Gratuita
+                {% else %}
+                  €5.00
+                {% endif %}
+              </span>
+            </div>
+            
+            {% if discount > 0 %}
+            <div class="d-flex justify-content-between mb-2 text-danger">
+              <span>Sconto (10% primo ordine):</span>
+              <span>-€{{ discount|floatformat:2 }}</span>
+            </div>
+            {% endif %}
+            
+            <hr>
+            
+            <div class="d-flex justify-content-between fw-bold fs-5">
+              <span>Totale:</span>
+              <span>€{{ total|floatformat:2 }}</span>
+            </div>
+            
+            {% if not user_is_authenticated %}
+            <div class="alert alert-info mt-3">
+              <i class="fas fa-info-circle me-2"></i>
+              Registrati per ottenere spedizione gratuita e 10% di sconto sul primo ordine!
+            </div>
+            {% endif %}
+              <a href="{% url 'shop:checkout' %}" class="btn btn-primary w-100 mt-4 py-2">
+                Procedi al checkout
+              </a>
+            </div>
+            <div class="text-center mt-0">
+              <img src="{% static 'img/metodi-di-pagamento.jpg' %}" alt="Metodi di pagamento accettati" class="img-fluid" style="max-height: 60px;">
+            </div>
+          </div>
+        </div>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+</section>
+
+<script>
+  document.querySelectorAll('.quantity-btn').forEach(button => {
+    button.addEventListener('click', function () {
+      const itemId = this.dataset.itemId;
+      const action = this.dataset.action;
+
+      fetch("{% url 'shop:change_quantity' %}", {
+        method: 'POST',
+        headers: {
+          'X-CSRFToken': '{{ csrf_token }}',
+          'Content-Type': 'application/x-www-form-urlencoded'
+        },
+        body: `item_id=${itemId}&action=${action}`
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          location.reload();
+        }
+      });
+    });
+  });
+</script>
+{% endblock %}
