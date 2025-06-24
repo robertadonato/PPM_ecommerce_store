@@ -146,5 +146,7 @@ import os
 # Fix per Railway
 if os.environ.get('ENV') == 'production':
     STATIC_ROOT = '/app/staticfiles'
+    MEDIA_ROOT = '/app/media'
     if not os.path.exists(STATIC_ROOT):
         os.makedirs(STATIC_ROOT, exist_ok=True)
+        os.makedirs(MEDIA_ROOT, exist_ok=True)
