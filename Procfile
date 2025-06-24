@@ -1,1 +1,1 @@
-web: python manage.py collectstatic --noinput; gunicorn ecommerce_project.wsgi:application --preload
+web: bash -c "mkdir -p /app/staticfiles && python manage.py collectstatic --noinput && gunicorn ecommerce_project.wsgi:application --preload --bind 0.0.0.0:$PORT"
