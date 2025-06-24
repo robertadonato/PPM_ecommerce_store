@@ -1,1 +1,1 @@
-web: python manage.py collectstatic --noinput; gunicorn ecommerce_project.wsgi:application
+web: python manage.py collectstatic --noinput; gunicorn ecommerce_project.wsgi:application --preload
