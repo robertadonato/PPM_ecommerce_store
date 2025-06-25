@@ -10,5 +10,7 @@ urlpatterns = [
     path('account/', include(('accounts.urls', 'account'), namespace='account')),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 
-if settings.DEBUG:
+import os
+
+if settings.DEBUG or os.environ.get('ENV') == 'production':
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
